@@ -95,6 +95,10 @@ const signin = async (req, res) => {
     // Find the user by email
     const user = await User.findOne({ email });
 
+    const encryptPassword = function(password) {
+      return bcrypt.hashSync(password, user.salt); // Use bcrypt to hash the password
+    };
+
     // If user not found, return an error
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -102,19 +106,21 @@ const signin = async (req, res) => {
     console.log("User found");
 
     // If user found but password doesn't match, return an error
-    if (!bcrypt.compare(password, user.hashed_password)) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    console.log("User found, password matches");
+    pw = encryptPassword(password);
+    console.log(pw, " ", user.hashed_password);
+    if(pw === user.hashed_password){
+      console.log("In loop");
+      //Generate JWT token
+      const token = jwt.sign({ _id: user._id }, secureSecretKey);
 
-    // Generate JWT token
-    const token = jwt.sign({ _id: user._id }, secureSecretKey);
-
-    // Send the token in the response
-    res.json({
+      // Send the token in the response
+      res.json({
       message: 'Signin successful',
       token,
-    });
+      });
+    }else{
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
   } catch (err) {
     return res.status(500).json({
       error: errorHandler.getErrorMessage(err),
