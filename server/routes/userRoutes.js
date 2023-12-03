@@ -3,7 +3,8 @@ const userCtrl = require('../controllers/userController.js');
 
 const router = express.Router();
 
-router.route('/api/users/signin').post(userCtrl.signin);
+router.route('/api/users/signin')
+  .post(userCtrl.signin);
 
 router.route('/api/users')
   .get(userCtrl.list)

@@ -3,19 +3,22 @@ const _ = require('lodash');
 const errorHandler = require('./error.controller.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { secureSecretKey } = require('../models/secretKeyConfig'); // Adjust the path accordingly
 
 const create = async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
-    // Generate a JWT token
-    const token = user.generateAuthToken();
-    return res.status(200).json({
-      message: 'Successfully signed up!',
-      token: token,
+    // Generate JWT token using the secure secret key
+    const token = jwt.sign({ _id: user._id }, secureSecretKey);
+
+    // Send the token in the response
+    res.json({
+      message: 'Signin successful',
+      token,
     });
   } catch (err) {
-    return res.status(400).json({
+    return res.status(500).json({
       error: errorHandler.getErrorMessage(err),
     });
   }
@@ -88,16 +91,24 @@ const signin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("Finding user");
     // Find the user by email
     const user = await User.findOne({ email });
 
-    // If user not found or password doesn't match, return an error
-    if (!user || !bcrypt.compareSync(password, user.hashed_password)) {
+    // If user not found, return an error
+    if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    console.log("User found");
+
+    // If user found but password doesn't match, return an error
+    if (!bcrypt.compare(password, user.hashed_password)) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    console.log("User found, password matches");
 
     // Generate JWT token
-    const token = jwt.sign({ _id: user._id }, secretKey); // Replace 'yourSecretKey' with a secure secret key
+    const token = jwt.sign({ _id: user._id }, secureSecretKey);
 
     // Send the token in the response
     res.json({

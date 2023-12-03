@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const saltRounds = 10;
 
 const secretKey = process.env.JWT_SECRET || 'fallbackSecretKey';
 
@@ -55,18 +56,11 @@ UserSchema.path('hashed_password').validate(function(v) {
 
 // Methods for encrypting the password, creating a salt, and generating JWT token
 UserSchema.methods = {
-  authenticate: function(plainText) {
-    return this.encryptPassword(plainText) === this.hashed_password;
-  },
   encryptPassword: function(password) {
-    if (!password || !this.salt) return '';
-    return require('crypto')
-      .createHmac('sha1', this.salt)
-      .update(password)
-      .digest('hex');
+    return bcrypt.hashSync(password, this.salt); // Use bcrypt to hash the password
   },
   makeSalt: function() {
-    return Math.round(new Date().valueOf() * Math.random()) + '';
+    return bcrypt.genSaltSync(10); // Generate a salt using bcrypt
   },
   generateAuthToken: function() {
     const token = jwt.sign({ _id: this._id }, secretKey); // Replace 'yourSecretKey' with a secure secret key

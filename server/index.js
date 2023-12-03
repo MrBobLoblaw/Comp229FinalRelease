@@ -13,7 +13,7 @@ app.use(express.json());
 
 
 // MongoDB configuration
-mongoose.connect("mongodb+srv://musketeersgroup408:musk229408@cluster0.pf9v9q7.mongodb.net/Surveyproject?retryWrites=true&w=majority", {
+mongoose.connect("mongodb://localhost:27017/Survey", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

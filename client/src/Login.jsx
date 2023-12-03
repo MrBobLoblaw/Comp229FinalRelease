@@ -9,19 +9,24 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
+      console.log("Sending request with credentials:", email, password);
       const response = await axios.post('http://localhost:3000/api/users/signin', { email, password });
-
+  
       if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
         console.log('Login successful');
-        // Uncomment the following line to redirect to the Homepage after successful login
+  
+        // Redirect to the homepage after successful login
         navigate('/homepage');
       } else {
         console.log('Login failed');
       }
     } catch (error) {
-      console.error('Error during login:', error.message);
+      console.error('Error during login:', error.message, " PW:", password);
     }
   };
+  
+  
 
   return (
     <div>
