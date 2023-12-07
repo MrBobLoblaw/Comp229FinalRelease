@@ -1,19 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt')
 const cors = require('cors');
-const UserRoutes = require('./routes/userRoutes');
-const jwt = require('jsonwebtoken')
-const app = express();
-
+const app = express(); // Make sure this line is present
+const userRoutes = require('./routes/userRoutes');
+const surveyRoutes = require('./routes/surveyRoutes');
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-
 // MongoDB configuration
-mongoose.connect("mongodb://localhost:27017/Survey", {
+mongoose.connect("mongodb+srv://musketeersgroup408:musk229408@cluster0.pf9v9q7.mongodb.net/Surveyproject?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -25,7 +22,13 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-app.use('/', UserRoutes);
+app.use((req, res, next) => {
+  console.log(`Received ${req.method} request for ${req.url}`);
+  next();
+});
+
+app.use('/', userRoutes);
+app.use('/', surveyRoutes);
 
 app.get('/', (req, res) => {
   res.send("Welcome to Student Survey");

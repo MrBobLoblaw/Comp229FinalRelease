@@ -1,14 +1,31 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import NavigationBar from './NavigationBar'
+import NavigationBar from './NavigationBar';
+import axios from 'axios';
 
 const SurveyForm = () => {
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
-    // send the data to your server or perform other actions here
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post('http://localhost:3000/surveys', data, {
+        headers: {
+          'Content-Type': 'application/json',
+          // Add your authentication token header if applicable
+        },
+      });
+
+      if (response.status === 201) {
+        // Survey successfully created, you can redirect or perform other actions
+        console.log('Survey created successfully');
+      } else {
+        console.error('Failed to create survey:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error creating survey:', error.message);
+    }
   };
+
 
   return (
     <div>
