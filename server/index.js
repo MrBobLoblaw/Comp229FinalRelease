@@ -1,16 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const app = express(); // Make sure this line is present
 const userRoutes = require('./routes/userRoutes');
 const surveyRoutes = require('./routes/surveyRoutes');
 const PORT = process.env.PORT || 3000;
+const app = express(); // Make sure this line is present
 
 app.use(cors());
 app.use(express.json());
 
 // MongoDB configuration
-mongoose.connect("mongodb+srv://musketeersgroup408:musk229408@cluster0.pf9v9q7.mongodb.net/Surveyproject?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://divern:LRhRKr3g6iooZVqV@cluster0.ahxzaxj.mongodb.net/surveydb?retryWrites=true&w=majority", {
+//mongoose.connect("mongodb+srv://musketeersgroup408:musk229408@cluster0.pf9v9q7.mongodb.net/Surveyproject?retryWrites=true&w=majority", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
